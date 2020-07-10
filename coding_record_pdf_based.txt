@@ -1,0 +1,223 @@
+
+
+The files should be checked/updated according to the following order:
+0. setwd.R
+   For changing address.
+0. packages_in_use.R
+   Any new packages being used in any other files should be added here.
+
+
+
+################################################################################
+#################################   GRID_OBJ/  #################################
+################################################################################
+
+
+# This file generates a GRID OBJECT.
+
+0. Data_Init.R
+	This file include the initial values decided by the user:
+		* 1) obs_data: the survival time y;
+		* 2) domain_1: c_0, by default, 0;
+		* 3) domain_2: C_0, by defailt, 200;
+		* 4) added_knots_num: the approximate knots number, w/o counting the obs_data, a, b, y, t
+		* 5) interest_val: t, the point of interest, equals to 100 by default
+		* 6) cols: color set for later visualization
+
+0. KS_criteria.R
+	This file does not source anything.
+	It provides functions to update the KS criteria adaptive to current grid setting:
+		* ecdf_ks_ci(obs_data) provides ECDF and KS CI for original observed data;
+		* udpate_criteria(GRID):
+			returns a data frame with 2 column entries, lower = KS_lower_adapt, upper = KS_upper_adapte.
+0. GRIDFunc.R
+	This file does not source anything.
+	It provides functions to initialize the GRID_OBJECT.
+		* equal_width_grid(n, Min, Max) : to get equal widths init_grid
+		* par2val(pars_vec)             : to get values from parameters
+		* val2par(vals_vec)             : to get parameters from values
+		* val2loc(vals, grid)           : to get index/indices of certain values in current grid setting
+		* update_grid(init_grid, added_vals) : to get the real grid in use, formed by initial grid and some more points
+		* get_seg_widths(grid)          : to get the segment lengths for the current grid.
+		* get_Nmax_by_grid/seg_set(grid): to get the nunmber of inner grid knots
+		* validate_val_vec(c(a,M,b), Min, Max)
+
+
+
+1. GRIDClassFunc.R
+	This file sources:
+		* ClassFunc_Init.R;
+		* GRIDFunc.R;
+		* KS_criteria.R;
+	which gives an object for our use.
+		* 0) with [y, c_0, C_0, n, t] speficed already;
+		* 1) init_grid = equal_width_grid(n, c_0, C_0)
+			* The initialized equally segemented grid of length n;
+		* 2) par_vec = c(par_a, par_M, par_b)
+			* Need to be specified
+		* 2) val_vec = par2val(par_vec) = c(a, M, b)
+			* Or need to be specified
+		* 3) x_grid = update_grid(init_grid, y, a, M, b, t)
+			* The grid setting actually in use, adaptive to obs_data, domain setting, t, a, M, and b;
+		* 4) domain_min, domain_max: 
+			* The actual c_0, C_0
+		* 5) interest_loc = val2loc(interest_val, x_grid)
+			* The index of t in grid;
+		* 6) loc_vec = val2loc(val_vec, x_grid)
+			* a vector of indices for the 3 paramters: [loc_a, loc_M, loc_b]
+		* 7) seg_set = get_seg_widths(x_grid)
+			* the deltas' set
+		* 8) Nmax = get_Nmax_by_grid(x_grid) 
+			  = get_Nmax_by_segset(seg_set)
+			* N, the maximum inner knots number, used in constraints.
+	A GRID class object:
+		* $obs_data
+		* $domain_1
+		* $domain_2
+		* $n
+		* $init_grid
+		* $t = interest_val
+		* $pars = par_vec = [par_a, par_M, par_b]
+		* $vals = val_vec = [a, M, b]
+		* $x_grid 
+		* $KS_CI_adapt
+		* $domain_min
+		* $domain_max
+		* $deltas
+		* $t_loc = interest_loc
+		* $cols
+		* $locs = loc_vec = [loc_a, loc_M, loc_b]
+		* $N = Nmax
+	Every time $n, $domain_1, $domain_2, $t
+		or $pars(par_vec) are to be changed, 
+	we need to call GRID = update_grid_obj(GRID) to give the updated version of grid.
+
+	* create_grid_obj(new_pars, new_domain_1, new_domain2, new_n, new_t, new_obs_data):
+		* this function allows to change the listed arguments to obtain a new grid object
+	* print_grid_obj(grid_obj):
+		* to show the grid object.
+	* is_equal(pbj1, obj2):
+		* to compare the two grid objects.
+	* update_grid_obj(grid_obj):
+		* if any of the arguments in one grid_obj were to change during the calculation,
+		* this function should be called:
+		* like GRID = update_grid_obj(GRID).
+
+
+########################################################################################
+################################## END of GRID_OBJ  ####################################
+########################################################################################
+
+
+
+################################################################################
+##################################   LP_OBJ/  ##################################
+################################################################################
+
+# This file generates a LP OBJECT.
+
+1. dens_obj.R
+    	This file only uses GRID_OBJ/GRIDClass.R
+	* get_density_obj_coeff(GRID) will return the object function coefficient(used in lpSolve) for current GRID object.
+
+2. CONSTRAINTS:
+
+1) con1_valid_est.R
+		This file only relies on GRID_OBJ/GRIDClass.R
+   		It is my new valid estimation constraints.
+			* f >= 0
+			* integral f = 1
+			* F(-infty) = 0
+			* F(+infty) = 1
+
+		* get_valid_const_mat(GRID)
+		* get_valid_const_dir(GRID)
+		* get_valid_const_rhs(GRID)
+		* get_ef_valid_const(f_hat, valid_const_mat) : help to calculate the left hand side of constraint with current estimated CDF values 
+		* ef_check_valid(f_hat, mat, dir, rhs)       : return if there were at least one constraint violated, and print the first index of violated constraint
+
+
+2) con2_mordality.R
+   		This file directly uses the GRID_OBJ/GRIDClass.R
+   		It provides the constraints first order derivative of f.
+			* f'(x) >= 0, x <= M;
+			* f'(x) <= 0, x > M.
+
+		* get_modal_const_mat(GRID)
+		* get_modal_const_dir(GRID)
+		* get_modal_const_rhs(GRID)
+		* get_ef_modal_const      : help to calculate the left hand side of constraint with current estimated pdf values 
+		* check_ef_modal          : return if there were at least one constraint violated, and print the first index of violated constraint
+
+3) con3_curvature.R
+   		This file directly uses GRID_OBJ/GRIDClassFunc.R
+   		It provides the constraints second order derivative of f.
+			* f''(x) >= 0, x<= a, <==> i <= loc_a
+			* f''(x) <= 0, a < x < b, <==> loc_a + 1 <= i <= loc_b - 1 
+			* f''(x) >= 0, x>= b, <==> i >= loc_b 
+
+		* get_curv_const_mat(GRID)
+		* get_curv_const_dir(GRID)
+		* get_curv_const_rhs(GRID)
+		* get_ef_curv_const        : help to calculate the left hand side of constraint with current estimated PDF values 
+		* check_ef_curv            : return if there were at least one constraint violated, and print the first index of violated constraint
+
+
+
+4) con4_KS.R
+   		This file directly uses GRID_OBJ/GRIDClassFunc.R
+		It provides the constraints of KS criteria.
+		* get_KS_const_mat(GRID)
+		* get_KS_const_dir(GRID)
+		* get_KS_const_rhs(GRID)
+		* get_ef_KS_const       : help to calculate the left hand side of constraint with current estimated CDF values 
+		* ef_check_ef_KS        : return if there were at least one constraint violated, and print the first index of violated constraint
+
+	
+5) constraints.R
+		This file sources:
+			* LP_OBJ/con1_valid_est.R
+			* LP_OBJ/con2_modality.R
+			* LP_OBJ/con3_curvature.R
+			* LP_OBJ/con4_KS.R
+		It provides the final constraints in lpSolve.
+		* get_const_mat(GRID)
+		* get_const_dir(GRID)
+		* get_const_rhs(GRID)
+
+########################################################################################
+################################### END of LP_OBJ  #####################################
+########################################################################################
+
+
+
+########################################################################################
+################################  Solve LP and use Optim ###############################
+########################################################################################
+
+1. LP_fix
+	This file sources:
+		* LP_OBJ/dens_obj.R
+		* LP_OBJ/constraints.R
+	It provides the related functions for fix (a, M, b):
+		* get_increments : get the incremented sums in F_hat calculation.
+		* get_cdf    : get F_hat from f_hat and a grid_object.
+		 
+		* solveLP_fix: provide the min and max in density estimation problem
+		* solveLP_min: provide the min in density estimation problem
+		* solveLP_max: provide the max in density estimation problem
+		* solveLP_max_min: trying to solve LP_max problem, but adaptive to Nelder-Mead algorithm, 
+                		   as NM minimize functions by default,
+                		   we should maiximize f(x) by minimizing -f(x)
+                		   that is, lp_min(-obj func) 
+		* get_eF_min : provide the estimated CDF(F hat) in minLP (density estimation) problem
+		* get_eF_max:  provide the estimated CDF(F hat) in maxLP (density estimation) problem
+		* get_eF_fix : provide the estimated CDF(F hat) in both mibLP and maxLP (density estimation) problem
+
+
+
+
+######### TODOs: 
+
+12. NM.R
+    It depends only on LP_fix_inflec.R file.
