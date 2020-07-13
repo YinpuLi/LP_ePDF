@@ -100,7 +100,7 @@ solveLP_max_min(new_pars = my_new_pars,
 # this is fine
 # test step by step
 new_pars = my_new_pars
-new_n    = 100
+new_n    = 10
 
 
 new_domain_1     = NULL
@@ -111,7 +111,7 @@ new_obs_data     = NULL
 grid_obj         = create_grid_obj(new_pars = my_new_pars, 
                                    new_domain_1,
                                    new_domain_2, 
-                                   new_n = 100,
+                                   new_n,
                                    new_t = 100,
                                    new_obs_data)
 

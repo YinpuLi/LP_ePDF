@@ -25,6 +25,11 @@
 # validate_val_vec(c(a,M,b), Min, Max )
 #                               : to return the validated values for a, M, b
 
+# get_neighbors(t, n2, epsilon = 1e-4)
+#                               : to get a vector of length n2(= added_neighbor_num), with values
+#                               : [..., t - 2* epsilon, t - epsilon, t, t + epsilon, t+ 2*epsilon,...]	
+
+
 # TODO: valdiate_loc_vec
 
 equal_width_grid    = function(
@@ -150,3 +155,28 @@ get_Nmax_by_grid   = function(grid){
 get_Nmax_by_segset = function(segs){
     return(length(segs) - 1)
 }
+
+
+get_neighbors      = function(
+    t,             # interest_val
+    n,            # added_nerighbor_num
+    epsilon        = 1e-4
+){
+    neighbors      = t
+    for(i in 1:n){
+        temp_right = t + i * epsilon
+        temp_left  = t - i * epsilon
+        
+        neighbors  = c(temp_left, neighbors, temp_right)
+        
+    }
+    return(neighbors)
+    
+}
+
+
+
+
+
+
+

@@ -53,16 +53,20 @@ solveLP_fix          = function(
     new_domain_1     = NULL,
     new_domain_2     = NULL,
     new_n            = NULL,
+    new_n_neighbors  = NULL,
     new_t            = NULL,
-    new_obs_data     = NULL
+    new_obs_data     = NULL,
+    epsilon          = 1e-4
 ){
     
     grid_obj         = create_grid_obj(new_pars, 
                                        new_domain_1,
                                        new_domain_2, 
                                        new_n,
+                                       new_n_neighbors,
                                        new_t,
-                                       new_obs_data)
+                                       new_obs_data,
+                                       epsilon)
     
     grid_obj_copy    = grid_obj
     
@@ -124,15 +128,19 @@ solveLP_min          = function(
     new_domain_1     = NULL,
     new_domain_2     = NULL,
     new_n            = NULL,
+    new_n_neighbors  = NULL,
     new_t            = NULL,
-    new_obs_data     = NULL
+    new_obs_data     = NULL,
+    epsilon          = 1e-4
 ){
     grid_obj         = create_grid_obj(new_pars, 
                                        new_domain_1,
                                        new_domain_2, 
                                        new_n,
+                                       new_n_neighbors,
                                        new_t,
-                                       new_obs_data)
+                                       new_obs_data,
+                                       epsilon)
     
     grid_obj_copy    = grid_obj
     
@@ -168,15 +176,20 @@ solveLP_max          = function(
     new_domain_1     = NULL,
     new_domain_2     = NULL,
     new_n            = NULL,
+    new_n_neighbors  = NULL,
     new_t            = NULL,
-    new_obs_data     = NULL
+    new_obs_data     = NULL,
+    epsilon          = 1e-4
 ){
     grid_obj         = create_grid_obj(new_pars, 
                                        new_domain_1,
                                        new_domain_2, 
                                        new_n,
+                                       new_n_neighbors,
                                        new_t,
-                                       new_obs_data)
+                                       new_obs_data,
+                                       epsilon)
+    
     
     grid_obj_copy    = grid_obj
     
@@ -218,16 +231,19 @@ solveLP_max_min      = function(
     new_domain_1     = NULL,
     new_domain_2     = NULL,
     new_n            = NULL,
+    new_n_neighbors  = NULL,
     new_t            = NULL,
-    new_obs_data     = NULL
+    new_obs_data     = NULL,
+    epsilon          = 1e-4
 ){
     grid_obj         = create_grid_obj(new_pars, 
                                        new_domain_1,
                                        new_domain_2, 
                                        new_n,
+                                       new_n_neighbors,
                                        new_t,
-                                       new_obs_data)
-    
+                                       new_obs_data,
+                                       epsilon)
    
     
     obj_coeff   = get_density_obj_coeff(grid_obj)
@@ -424,16 +440,20 @@ get_eF_fix           = function(
     new_domain_1     = NULL,
     new_domain_2     = NULL,
     new_n            = NULL,
+    new_n_neighbors  = NULL,
     new_t            = NULL,
     new_obs_data     = NULL,
+    epsilon          = 1e-4,
     show_plot        = FALSE
 ){
     grid_obj         = create_grid_obj(new_pars, 
                                        new_domain_1,
                                        new_domain_2, 
                                        new_n,
+                                       new_n_neighbors,
                                        new_t,
-                                       new_obs_data)
+                                       new_obs_data,
+                                       epsilon)
     obj_coeff   = get_density_obj_coeff(grid_obj)
     const_mat   = get_const_mat(grid_obj)
     const_dir   = get_const_dir(grid_obj)
@@ -641,16 +661,21 @@ get_eF_max           = function(
     new_domain_1     = NULL,
     new_domain_2     = NULL,
     new_n            = NULL,
+    new_n_neighbors  = NULL,
     new_t            = NULL,
     new_obs_data     = NULL,
+    epsilon          = 1e-4,
     show_plot        = FALSE
 ){
     grid_obj         = create_grid_obj(new_pars, 
                                        new_domain_1,
                                        new_domain_2, 
                                        new_n,
+                                       new_n_neighbors,
                                        new_t,
-                                       new_obs_data)
+                                       new_obs_data,
+                                       epsilon)
+    
     obj_coeff   = get_density_obj_coeff(grid_obj)
     const_mat   = get_const_mat(grid_obj)
     const_dir   = get_const_dir(grid_obj)
@@ -820,16 +845,21 @@ get_eF_min           = function(
     new_domain_1     = NULL,
     new_domain_2     = NULL,
     new_n            = NULL,
+    new_n_neighbors  = NULL,
     new_t            = NULL,
     new_obs_data     = NULL,
+    epsilon          = 1e-4,
     show_plot        = FALSE
 ){
     grid_obj         = create_grid_obj(new_pars, 
                                        new_domain_1,
                                        new_domain_2, 
                                        new_n,
+                                       new_n_neighbors,
                                        new_t,
-                                       new_obs_data)
+                                       new_obs_data,
+                                       epsilon)
+    
     obj_coeff   = get_density_obj_coeff(grid_obj)
     const_mat   = get_const_mat(grid_obj)
     const_dir   = get_const_dir(grid_obj)

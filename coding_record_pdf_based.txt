@@ -22,7 +22,8 @@ The files should be checked/updated according to the following order:
 		* 3) domain_2: C_0, by defailt, 200;
 		* 4) added_knots_num: the approximate knots number, w/o counting the obs_data, a, b, y, t
 		* 5) interest_val: t, the point of interest, equals to 100 by default
-		* 6) cols: color set for later visualization
+		* 6) added_neighbor_num : the number of neighbor knots added next to t
+		* 7) cols: color set for later visualization
 
 0. KS_criteria.R
 	This file does not source anything.
@@ -41,6 +42,8 @@ The files should be checked/updated according to the following order:
 		* get_seg_widths(grid)          : to get the segment lengths for the current grid.
 		* get_Nmax_by_grid/seg_set(grid): to get the nunmber of inner grid knots
 		* validate_val_vec(c(a,M,b), Min, Max)
+		* get_neighbors(t, n, epsilon = 1e-4) : to get a vector of length n2/2 + 1(= added_neighbor_num), with values
+						       : [..., t - 2* epsilon, t - epsilon, t, t + epsilon, t+ 2*epsilon,...]	
 
 
 
@@ -50,7 +53,7 @@ The files should be checked/updated according to the following order:
 		* GRIDFunc.R;
 		* KS_criteria.R;
 	which gives an object for our use.
-		* 0) with [y, c_0, C_0, n, t] speficed already;
+		* 0) with [y, c_0, C_0, n, t, a, M, b, n_neighbor, epsilon] speficed already;
 		* 1) init_grid = equal_width_grid(n, c_0, C_0)
 			* The initialized equally segemented grid of length n;
 		* 2) par_vec = c(par_a, par_M, par_b)
@@ -77,6 +80,9 @@ The files should be checked/updated according to the following order:
 		* $n
 		* $init_grid
 		* $t = interest_val
+		* $n_neighbors
+		* $epsilon
+		* $t_neighbors
 		* $pars = par_vec = [par_a, par_M, par_b]
 		* $vals = val_vec = [a, M, b]
 		* $x_grid 

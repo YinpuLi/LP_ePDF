@@ -16,11 +16,15 @@ par_vec             = val2par(val_vec)
 # the final x_grid should include some more points"
     # observed data
     # point of interest
+    # some neighbors of point of interest
     # left and right neighbor of point of interest 
     # a, M, b
+n_neighbors         = added_neighbor_num
+t_neighbors         = get_neighbors(interest_val,
+                                    added_neighbor_num,
+                                    epsilon = 1e-4)
 
-x_grid              = update_grid(init_grid, c(obs_data, val_vec, interest_val, c(interest_val - 1e-6,
-                                                                                  interest_val + 1e-6)))
+x_grid              = update_grid(init_grid, c(obs_data, val_vec, interest_val, t_neighbors))
 KS_CI_adapt         = update_criteria(x_grid, obs_data)
 
 # (2) the actual min and max of grid:
@@ -50,6 +54,9 @@ GRID$domain_2   = domain_2
 GRID$n          = added_knots_num
 GRID$init_grid  = init_grid
 GRID$t          = interest_val
+GRID$n_neighbors= added_neighbor_num
+GRID$epsilon    = 1e-4
+GRID$t_neighbors= t_neighbors
 GRID$pars       = par_vec
 GRID$vals       = val_vec
 GRID$x_grid     = x_grid
@@ -70,8 +77,10 @@ create_grid_obj    = function(
     new_domain_1     = NULL,
     new_domain_2     = NULL,
     new_n            = NULL,
+    new_n_neighbors  = NULL,
     new_t            = NULL,
-    new_obs_data     = NULL
+    new_obs_data     = NULL,
+    epsilon          = 1e-4
 ){
     # create an empty new_grid_obj
     
@@ -89,6 +98,10 @@ create_grid_obj    = function(
     new_GRID$n          = ifelse(is.null(new_n), added_knots_num, new_n)
     new_GRID$init_grid  = equal_width_grid(new_GRID$n, new_GRID$domain_1, new_GRID$domain_2)
     new_GRID$t          = ifelse(is.null(new_t), interest_val, new_t)
+    new_GRID$n_neighbors= ifelse(is.null(new_n_neighbors), added_neighbor_num, new_n_neighbors)
+    
+    new_GRID$epsilon    = ifelse(is.null(epsilon), 1e-4, epsilon)
+    
     
     if(is.null(new_pars)){
         new_GRID$pars   = par_vec
@@ -103,11 +116,16 @@ create_grid_obj    = function(
     
     new_GRID$pars       = val2par(new_GRID$vals)
     
+    new_GRID$t_neighbors= get_neighbors(new_GRID$t,
+                                        new_GRID$n_neighbors,
+                                        new_GRID$epsilon)
+    
     
     new_GRID$x_grid     = update_grid(new_GRID$init_grid, 
                                       c(new_GRID$obs_data,
                                         new_GRID$vals,
-                                        new_GRID$t))
+                                        new_GRID$t,
+                                        new_GRID$t_neighbors))
     
     new_GRID$KS_CI_adapt= update_criteria(new_GRID$x_grid, new_GRID$obs_data)
     
@@ -159,6 +177,10 @@ update_grid_obj             = function(grid_obj){
                                                Min         = grid_obj$domain_1,
                                                Max         = grid_obj$domain_2)
         grid_obj$pars       = val2par(grid_obj$vals)
+        grid_obj$t_neighbors= get_neighbors(grid_obj$t, 
+                                            grid_obj$n_neighbors,
+                                            grid_obj$epsilon)
+        
           
         grid_obj$x_grid     = update_grid(grid_obj$init_grid,
                                          c(

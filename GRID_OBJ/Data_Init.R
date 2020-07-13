@@ -7,7 +7,8 @@ source('packages_in_use.R')
 #       * 3) domain_2: C_0, by defailt, 200;
 #       * 4) added_knots_num: the approximate knots number, w/o counting the obs_data, a, b, y, t
 #       * 5) interest_val: t, the point of interest, equals to 100 by default
-#       * 6) cols: color set for later visualization
+#       * 6) added_neighbor_num : the number of neighbor knots added next to t
+#       * 7) cols: color set for later visualization
 
 
 obs_data = c(121.4, 119.3, 127.4, 130.9,  99.9, 123.8, 115.7, 125.5,
@@ -23,6 +24,7 @@ added_knots_num = 10 # n
 # Need to input/specify the value for interest = t
 
 interest_val    = 100
+added_neighbor_num = 2
 
 
 
