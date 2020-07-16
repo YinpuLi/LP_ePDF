@@ -163,7 +163,7 @@ The files should be checked/updated according to the following order:
 			* f''(x) >= 0, x>= b, <==> i >= loc_b 
 
 		* get_curv_const_mat(GRID)
-		* get_curv_const_dir(GRID)
+		* get_curv_const_dir(GRID): I changed the con3 curvature, by allowing index_a = index_b
 		* get_curv_const_rhs(GRID)
 		* get_ef_curv_const        : help to calculate the left hand side of constraint with current estimated PDF values 
 		* check_ef_curv            : return if there were at least one constraint violated, and print the first index of violated constraint
@@ -190,6 +190,9 @@ The files should be checked/updated according to the following order:
 		* get_const_mat(GRID)
 		* get_const_dir(GRID)
 		* get_const_rhs(GRID)
+
+		
+
 
 ########################################################################################
 ################################### END of LP_OBJ  #####################################
@@ -221,7 +224,9 @@ The files should be checked/updated according to the following order:
 		* get_eF_fix : provide the estimated CDF(F hat) in both mibLP and maxLP (density estimation) problem
 
 
-
+2. NM_temp2.R
+	This file souces LP_fix.R. 
+	It includes temprorily my optim functions.
 
 ######### TODOs: 
 

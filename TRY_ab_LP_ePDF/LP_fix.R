@@ -80,37 +80,42 @@ solveLP_fix          = function(
     lp_max          = lp("max", obj_coeff, const_mat, const_dir, const_rhs)
     
     if(lp_min$status != 0){
+        
+        big_num      = 1e6
+        lp_min$objval = big_num   
+        
         cat("Sth. wrong with LP MIN", "\n")
         cat("lp_min$status = ", lp_min$status, "\n")
+        cat("I am using a SUPER BIG number as objval = ", big_num, "\n")
+        
+        print_grid_obj(grid_obj)
+        
         if(lp_min$status == 2){
-            big_num      = 1e6
-            lp_min$objval = big_num
-            cat("LP MIN does not converge!", "\n", 
-                "I am using a SUPER BIG number as objval = ", big_num, "\n")
+            cat("LP MIN does not converge!", "\n")
+            
         } else if(lp_min$status == 5){
-            big_num      = 1e6
-            lp_min$objval = big_num
-            cat("LP MIN: Numerical failure encountered!", "\n",
-                "I am using a SUPER BIG number as objval = ", big_num, "\n")
-            print_grid_obj(grid_obj)
+            cat("LP MIN: Numerical failure encountered!", "\n")
+            
             #save(grid_obj, file = "status5.RData")
         }
     }
     if(lp_max$status != 0){
+        
+        small_num    = -1e6
+        lp_max$objval   = small_num
+        
         cat("Sth. wrong with LP MAX", "\n")
         cat("lp_max$status = ", lp_max$status, "\n")
+        cat("I am using a SUPER BIG number as objval = ", big_num, "\n")
+        
+        print_grid_obj(grid_obj)
+        
         if(lp_max$status == 2){
-            small_num    = -1e6
-            lp_max$objval   = small_num
-            cat("LP MAX does not converge!", "\n", 
-                "I am using a SUPER SMALL(negative) number as objval = ", small_num, "\n")
+            cat("LP MAX does not converge!", "\n")
             
         } else if(lp_max$status == 5){
-            small_num       = -1e6
-            lp_max$objval   = small_num
-            cat("LP MAX: Numerical failure encountered!", "\n",
-                "I am using a SUPER SMALL(negative) number as objval = ", small_num, "\n")
-            print_grid_obj(grid_obj)
+            cat("LP MAX: Numerical failure encountered!", "\n")
+            
             #save(grid_obj, file = "status5.RData")
             
         }
@@ -153,13 +158,25 @@ solveLP_min          = function(
     lp_min          = lp("min", obj_coeff, const_mat, const_dir, const_rhs)
     
     if(lp_min$status != 0){
+        
+        big_num      = 1e6
+        lp_min$objval = big_num
+        
         cat("Sth. wrong with LP MIN", "\n")
         cat("lp_min$status = ", lp_min$status, "\n")
+        cat("I am using a SUPER BIG number as objval = ", big_num, "\n")
+        
+        print_grid_obj(grid_obj)
+        
         if(lp_min$status == 2){
+            cat("LP MIN does not converge!", "\n")
+            
+        }else if(lp_min$status == 5){
             big_num      = 1e6
             lp_min$objval = big_num
-            cat("LP MIN does not converge!", "\n", 
-                "I am using a SUPER BIG number as objval = ", big_num, "\n")
+            cat("LP MIN does not converge!", "\n")
+            #save(grid_obj, file = "status5.RData")
+            
         }
     }
     
@@ -202,19 +219,20 @@ solveLP_max          = function(
 
 
     if(lp_max$status != 0){
+        
+        small_num    = -1e6
+        lp_max$objval   = small_num
+        
         cat("Sth. wrong with LP MAX", "\n")
         cat("lp_max$status = ", lp_max$status, "\n")
+        cat("I am using a SUPER SMALL(negative) number as objval = ", small_num, "\n")
+        
+        print_grid_obj(grid_obj)
         if(lp_max$status == 2){
-            small_num    = -1e6
-            lp_max$objval   = small_num
-            cat("LP MAX does not converge!", "\n", 
-                "I am using a SUPER SMALL(negative) number as objval = ", small_num, "\n")
+            cat("LP MAX does not converge!", "\n")
             
         } else if(lp_max$status == 5){
-            small_num       = -1e6
-            lp_max$objval   = small_num
-            cat("LP MAX: Numerical failure encountered!", "\n",
-                "I am using a SUPER SMALL(negative) number as objval = ", small_num, "\n")
+            cat("LP MAX: Numerical failure encountered!", "\n")
             
         }
     }
@@ -257,25 +275,26 @@ solveLP_max_min      = function(
     lp_min          = lp("min", obj_coeff_adpt, const_mat, const_dir, const_rhs)
 
     if(lp_min$status != 0){
+        
+        big_num      = 1e6
+        lp_min$objval = big_num
+        
         cat("\nSth. wrong with LP MIN", "\n")
         cat("lp_min$status = ", lp_min$status, "\n")
+        cat("I am using a SUPER BIG number as objval = ", big_num, "\n")
+        
+        print_grid_obj(grid_obj)
+        
         if(lp_min$status == 2){
-            big_num      = 1e6
-            lp_min$objval = big_num
-           cat("LP MIN does not converge!", "\n",
-              "I am using a SUPER BIG number as objval = ", big_num, "\n")
-
+            cat("LP MIN does not converge!", "\n")
+          
         } else if(lp_min$status == 5){
-            big_num      = 1e6
-            lp_min$objval = big_num
-            cat("LP MIN: Numerical failure encountered!", "\n",
-                "I am using a SUPER BIG number as objval = ", big_num, "\n")
-            print_grid_obj(grid_obj)
-            save(grid_obj, file = "status5.RData")
+            cat("LP MIN: Numerical failure encountered!", "\n")
+            #save(grid_obj, file = "status5.RData")
         }
     }
     #print(paste0(pars, lp_min$objval))
-    cat("\nMAX_MIN val =", lp_min$objval, "\n")
+    #cat("\nMAX_MIN val =", lp_min$objval, "\n")
     
     return(lp_min$objval)
 

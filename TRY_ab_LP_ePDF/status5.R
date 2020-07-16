@@ -103,6 +103,15 @@ solveLP_fix(new_pars = my_new_pars,
             new_t = new_t,
             new_n = 30)
 
+new_t    = 50
+(my_new_vals = c(49.99999, 50.00001))
+#my_new_vals = c(115, 122.4, 131)
+(my_new_pars = val2par(my_new_vals))
+solveLP_fix(new_pars = my_new_pars,
+            new_t = new_t,
+            new_n = 30)
+
+
 
 # n = 100
 

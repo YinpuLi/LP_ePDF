@@ -44,6 +44,17 @@ get_curv_const_dir = function(
     #print(paste0("loc_vec =", loc_vec))
     inner_knots_num       = grid_obj$N
     
+    if(loc_a == loc_b){
+        
+        print(loc_vec)
+        print_grid_obj(grid_obj)
+        
+        V = c(
+            rep(">=", inner_knots_num)
+        )
+        return(V)
+    }
+    
     V = c(
         rep(">=", loc_a),
         rep("<=", loc_b - loc_a - 1),

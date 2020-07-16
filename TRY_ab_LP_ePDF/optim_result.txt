@@ -1,0 +1,172 @@
+> IMPR_max
+            NM          BFGS           CG LB             SANN       TOTAL
+1  0.076859465  0.000000e+00 0.000000e+00  0          NOT RUN 0.076859465
+2  0.000000000  0.000000e+00 0.000000e+00  0 7.10270701443202 7.102707014
+3  0.007159601  1.953993e-14 2.398082e-13  0          NOT RUN 0.007159601
+4  0.000000000 -3.241851e-13 0.000000e+00  0                0 0.000000000
+5  0.000000000 -3.241851e-13 0.000000e+00  0                0 0.000000000
+6  0.000000000 -3.241851e-13 0.000000e+00  0                0 0.000000000
+7  0.000000000 -3.241851e-13 0.000000e+00  0                0 0.000000000
+8  0.000000000 -3.241851e-13 0.000000e+00  0                0 0.000000000
+9  0.000000000 -3.241851e-13 0.000000e+00  0                0 0.000000000
+10 0.000000000 -3.241851e-13 0.000000e+00  0                0 0.000000000
+11 0.000000000 -3.241851e-13 0.000000e+00  0                0 0.000000000
+> IMPR_max_copy
+      NM BFGS CG LB    SANN TOTAL
+1  0.077    0  0  0 NOT RUN 0.077
+2  0.000    0  0  0   7.103 7.103
+3  0.007    0  0  0 NOT RUN 0.007
+4  0.000    0  0  0       0 0.000
+5  0.000    0  0  0       0 0.000
+6  0.000    0  0  0       0 0.000
+7  0.000    0  0  0       0 0.000
+8  0.000    0  0  0       0 0.000
+9  0.000    0  0  0       0 0.000
+10 0.000    0  0  0       0 0.000
+11 0.000    0  0  0       0 0.000
+> TIME_max
+     NM BFGS   CG   LB             SANN
+1  0.42 0.08 0.06 0.95          NOT RUN
+2  0.31 0.10 0.04 0.89 91.8199999999997
+3  1.10 0.40 3.37 1.08          NOT RUN
+4  0.94 0.46 0.44 1.08 82.8600000000006
+5  0.77 0.39 0.39 1.01 82.0500000000011
+6  0.75 0.36 0.45 1.02 89.3400000000001
+7  0.80 0.43 0.40 1.19 85.1899999999987
+8  1.00 0.36 0.43 1.08 87.1999999999989
+9  1.11 0.41 0.39 1.11  93.630000000001
+10 0.82 0.46 0.42 1.03 90.8600000000006
+11 0.80 0.40 0.42 1.07 96.2200000000012
+
+
+fit_temp$par
+par2val(fit_temp$par)
+old_mthd_val
+
+solveLP_max_min(new_par = fit_temp$par, new_t = 100)
+solveLP_max_min(new_par = c(99.960571, -3.232206), new_t = 100) # is 2397.971?
+
+> fit_temp$par
+[1] 99.3340231 -0.4064599
+> par2val(fit_temp$par)
+[1]  99.33402 100.00003
+> old_mthd_val
+[1] 7.186726
+> 
+> solveLP_max_min(new_par = fit_temp$par, new_t = 100)
+[1] -7.186726
+> solveLP_max_min(new_par = c(99.960571, -3.232206), new_t = 100) # is 2397.971
+[1] -2397.971
+
+
+
+
+
+> old_par
+[1] 99.960571 -3.232206
+> par2val(old_par)
+[1]  99.96057 100.00004
+> old_mthd_val
+[1] 2397.971
+
+
+
+
+if(iters== 1){
+        # iterates over the methods_set except NM
+        for(m in 2:length(methods_set)){
+            
+            cat("methods = ", methods_set[m], "\n")
+            # use the previous par 
+            
+            ptm = proc.time()
+            
+            fit_temp = optim(par = old_par,
+                             fn  = solveLP_max_min,
+                             new_domain_1     = NULL,
+                             new_domain_2     = NULL,
+                             new_n            = NULL,
+                             new_n_neighbors  = NULL,
+                             new_t            = my_interest[i],
+                             new_obs_data     = NULL,
+                             epsilon          = 1e-4,
+                             method  = methods_set[m],
+                             control = list(
+                                 reltol = 1e-8
+                             )
+            )
+            
+            ptm_temp     = proc.time() - ptm
+            TIME_max[iters, m] = ptm_temp[3]
+            
+            old_par      = fit_temp$par
+            new_mthd_val = - fit_temp$value
+            mthd_imp     = new_mthd_val - old_mthd_val
+            old_mthd_val = new_mthd_val
+            
+            IMPR_max[iters, m] = mthd_imp
+            
+            cat("Best pars = ", fit_temp$par ,"\n")
+            cat("Best value = ", - fit_temp$value, "\n")
+            cat("Improved by ", mthd_imp, " with ", methods_set[m], "\n")
+            
+        }
+        new_val      = - fit_temp$value
+        if(new_val   > old_val){
+            cat("Making improvement by ", new_val - old_val)
+            old_val  = new_val
+            
+            IMPR_max[iters, m + 1] = "NOT RUN"
+            TIME_max[iters, m + 1] = "NOT RUN"
+            
+            iters  = iters + 1
+            IMPR_max$TOTAL[iters] = new_val - old_val
+            
+            next
+        } else {
+            # no improvement by these methods, then call SANN
+            cat("No improvements by these methods, I am using SANN now.\n")
+            
+            ptm      = proc.time()
+            fit_temp = optim(par = old_par,
+                             fn  = solveLP_max_min,
+                             new_domain_1     = NULL,
+                             new_domain_2     = NULL,
+                             new_n            = NULL,
+                             new_n_neighbors  = NULL,
+                             new_t            = my_interest[i],
+                             new_obs_data     = NULL,
+                             epsilon          = 1e-4,
+                             method  = "SANN",
+                             control = list(
+                                 reltol = 1e-8
+                             )
+            )
+            
+            ptm_temp = proc.time() - ptm
+            
+            old_par  = fit_temp$par
+            new_mthd_val = - fit_temp$value
+            mthd_imp     = new_mthd_val - old_mthd_val
+            old_mthd_val = new_mthd_val
+            
+            IMPR_max[iters, m + 1] = mthd_imp
+            TIME_max[iters, m + 1] = ptm_temp[3]
+            
+            cat("Best pars = ", fit_temp$par ,"\n")
+            cat("Best value = ", - fit_temp$value, "\n")
+            cat("Improved by ", mthd_imp, " with SANN", "\n")
+            
+            
+            new_val  = - fit_temp$value
+            cat("Making improvement by ", new_val - old_val)
+            old_val  = new_val
+            iters  = iters + 1
+            
+            IMPR_max$TOTAL[iters] = new_val - old_val
+            next
+        }
+        
+        
+        
+    }

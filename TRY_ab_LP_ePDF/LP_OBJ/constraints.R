@@ -20,6 +20,7 @@ source('LP_OBJ/con4_KS.R')
 get_const_mat       = function(
     grid_obj
 ){
+    #grid_obj        = update_grid_obj(grid_obj)
     mat1            = get_valid_const_mat(grid_obj)
     mat2            = get_modal_const_mat(grid_obj)
     mat3            = get_curv_const_mat(grid_obj)
@@ -31,7 +32,7 @@ get_const_mat       = function(
 get_const_dir       = function(
     grid_obj
 ){
-    
+    #grid_obj        = update_grid_obj(grid_obj)
     dir1            = get_valid_const_dir(grid_obj)
     dir2            = get_modal_const_dir(grid_obj)
     dir3            = get_curv_const_dir(grid_obj)
@@ -44,6 +45,7 @@ get_const_dir       = function(
 get_const_rhs       = function(
     grid_obj
 ){
+    #grid_obj        = update_grid_obj(grid_obj)
     const.rhs1      = get_valid_const_rhs(grid_obj)
     const.rhs2      = get_modal_const_rhs(grid_obj)
     const.rhs3      = get_curv_const_rhs(grid_obj)
