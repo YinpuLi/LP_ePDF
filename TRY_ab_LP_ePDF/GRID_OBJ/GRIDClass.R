@@ -14,6 +14,8 @@ val_vec             = par2val(par_vec)# c(115, 121, 131)
 val_vec             = validate_val_vec(new_val_vec = val_vec,
                                        Min         = domain_1,
                                        Max         = domain_2)
+
+# need to do the par again, b may extend to 200
 par_vec             = val2par(val_vec)
 
 # the final x_grid should include some more points"
@@ -118,6 +120,8 @@ create_grid_obj    = function(
     new_GRID$vals       = validate_val_vec(new_val_vec = new_GRID$vals,
                                            Min         = new_GRID$domain_1,
                                            Max         = new_GRID$domain_2)
+    # need to do the $pars again, in case b is validated into 200
+    new_GRID$pars       = val2par(new_GRID$vals)
     
     new_GRID$x_grid     = update_grid(new_GRID$init_grid, 
                                       c(new_GRID$obs_data,
@@ -181,6 +185,8 @@ update_grid_obj             = function(grid_obj){
         grid_obj$vals       = validate_val_vec(new_val_vec = grid_obj$vals,
                                                Min         = grid_obj$domain_1,
                                                Max         = grid_obj$domain_2)
+        # need to do the $pars again, in case b is validated into 200
+        grid_obj$pars       = val2par(grid_obj$vals)
         
         grid_obj$x_grid     = update_grid(grid_obj$init_grid,
                                          c(

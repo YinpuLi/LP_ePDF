@@ -1,3 +1,6 @@
+### t = 100 case ###
+
+
 > IMPR_max
             NM          BFGS           CG LB             SANN       TOTAL
 1  0.076859465  0.000000e+00 0.000000e+00  0          NOT RUN 0.076859465
@@ -69,104 +72,117 @@ solveLP_max_min(new_par = c(99.960571, -3.232206), new_t = 100) # is 2397.971?
 > old_mthd_val
 [1] 2397.971
 
+### t = 180 case ###
+
+> IMPR_max
+             NM          BFGS           CG            LB         SANN        TOTAL
+1  6.576795e-03  0.000000e+00 0.000000e+00  1.080733e-15 1.681589e-04 0.000000e+00
+2  1.780694e-15  1.772887e-15 2.089474e-15 -2.445960e-15 2.747048e-10 2.747105e-10
+3  0.000000e+00 -4.336809e-18 0.000000e+00  0.000000e+00 3.116199e-10 3.116199e-10
+4  2.927001e-10  0.000000e+00 0.000000e+00  0.000000e+00 0.000000e+00 2.927001e-10
+5  2.017953e-11  1.893305e-10 0.000000e+00  0.000000e+00 0.000000e+00 2.095100e-10
+6  1.709259e-05  2.195112e-12 4.859333e-13  0.000000e+00 0.000000e+00 1.709259e-05
+7  0.000000e+00  0.000000e+00 0.000000e+00  0.000000e+00 0.000000e+00 0.000000e+00
+8  0.000000e+00  0.000000e+00 0.000000e+00  0.000000e+00 0.000000e+00 0.000000e+00
+9  0.000000e+00  0.000000e+00 0.000000e+00  0.000000e+00 0.000000e+00 0.000000e+00
+10 0.000000e+00  0.000000e+00 0.000000e+00  0.000000e+00 0.000000e+00 0.000000e+00
+11 0.000000e+00  0.000000e+00 0.000000e+00  0.000000e+00 0.000000e+00 0.000000e+00
+> IMPR_max_copy = IMPR_max
+> for(k in 1:nrow(IMPR_max)){
++     for(j in 1:ncol(IMPR_max)){
++         if(IMPR_max_copy[k, j] != "NOT RUN"){
++             IMPR_max_copy[k, j] = round(as.numeric(IMPR_max[k, j]), 3)
++         }
++     }
++ }
+> IMPR_max_copy
+      NM BFGS CG LB SANN TOTAL
+1  0.007    0  0  0    0     0
+2  0.000    0  0  0    0     0
+3  0.000    0  0  0    0     0
+4  0.000    0  0  0    0     0
+5  0.000    0  0  0    0     0
+6  0.000    0  0  0    0     0
+7  0.000    0  0  0    0     0
+8  0.000    0  0  0    0     0
+9  0.000    0  0  0    0     0
+10 0.000    0  0  0    0     0
+11 0.000    0  0  0    0     0
+> TIME_max
+     NM BFGS   CG   LB   SANN
+1  0.61 0.08 0.05 0.21  85.90
+2  0.56 0.22 0.56 0.47  81.42
+3  0.98 0.52 0.52 1.40  89.31
+4  0.63 0.23 0.27 0.86 129.03
+5  0.72 0.42 0.28 0.86  79.56
+6  2.27 0.37 0.93 0.96  96.33
+7  3.00 0.38 0.40 0.97  90.30
+8  2.89 0.36 0.41 0.96  84.99
+9  3.14 0.36 0.39 0.94  79.03
+10 2.69 0.34 0.37 1.05  84.85
+11 2.64 0.36 0.37 0.92  93.51
+> fit_temp$par
+[1] 123.908655   1.262741
+> par2val(fit_temp$par)
+[1] 123.9087 127.4438
+> old_val
+[1] 0.006762048
+> solveLP_max_min(new_par = fit_temp$par, new_t = my_interest[i])
+[1] -0.006762048
 
 
 
-if(iters== 1){
-        # iterates over the methods_set except NM
-        for(m in 2:length(methods_set)){
-            
-            cat("methods = ", methods_set[m], "\n")
-            # use the previous par 
-            
-            ptm = proc.time()
-            
-            fit_temp = optim(par = old_par,
-                             fn  = solveLP_max_min,
-                             new_domain_1     = NULL,
-                             new_domain_2     = NULL,
-                             new_n            = NULL,
-                             new_n_neighbors  = NULL,
-                             new_t            = my_interest[i],
-                             new_obs_data     = NULL,
-                             epsilon          = 1e-4,
-                             method  = methods_set[m],
-                             control = list(
-                                 reltol = 1e-8
-                             )
-            )
-            
-            ptm_temp     = proc.time() - ptm
-            TIME_max[iters, m] = ptm_temp[3]
-            
-            old_par      = fit_temp$par
-            new_mthd_val = - fit_temp$value
-            mthd_imp     = new_mthd_val - old_mthd_val
-            old_mthd_val = new_mthd_val
-            
-            IMPR_max[iters, m] = mthd_imp
-            
-            cat("Best pars = ", fit_temp$par ,"\n")
-            cat("Best value = ", - fit_temp$value, "\n")
-            cat("Improved by ", mthd_imp, " with ", methods_set[m], "\n")
-            
-        }
-        new_val      = - fit_temp$value
-        if(new_val   > old_val){
-            cat("Making improvement by ", new_val - old_val)
-            old_val  = new_val
-            
-            IMPR_max[iters, m + 1] = "NOT RUN"
-            TIME_max[iters, m + 1] = "NOT RUN"
-            
-            iters  = iters + 1
-            IMPR_max$TOTAL[iters] = new_val - old_val
-            
-            next
-        } else {
-            # no improvement by these methods, then call SANN
-            cat("No improvements by these methods, I am using SANN now.\n")
-            
-            ptm      = proc.time()
-            fit_temp = optim(par = old_par,
-                             fn  = solveLP_max_min,
-                             new_domain_1     = NULL,
-                             new_domain_2     = NULL,
-                             new_n            = NULL,
-                             new_n_neighbors  = NULL,
-                             new_t            = my_interest[i],
-                             new_obs_data     = NULL,
-                             epsilon          = 1e-4,
-                             method  = "SANN",
-                             control = list(
-                                 reltol = 1e-8
-                             )
-            )
-            
-            ptm_temp = proc.time() - ptm
-            
-            old_par  = fit_temp$par
-            new_mthd_val = - fit_temp$value
-            mthd_imp     = new_mthd_val - old_mthd_val
-            old_mthd_val = new_mthd_val
-            
-            IMPR_max[iters, m + 1] = mthd_imp
-            TIME_max[iters, m + 1] = ptm_temp[3]
-            
-            cat("Best pars = ", fit_temp$par ,"\n")
-            cat("Best value = ", - fit_temp$value, "\n")
-            cat("Improved by ", mthd_imp, " with SANN", "\n")
-            
-            
-            new_val  = - fit_temp$value
-            cat("Making improvement by ", new_val - old_val)
-            old_val  = new_val
-            iters  = iters + 1
-            
-            IMPR_max$TOTAL[iters] = new_val - old_val
-            next
-        }
-        
-        
-        
-    }
+
+#### t = 80 ####
+
+> IMPR_max
+             NM         BFGS CG LB                 SANN        TOTAL
+1  1.293367e-02 0.000000e+00  0  0              NOT RUN 1.293367e-02
+2  1.734723e-18 0.000000e+00  0  0                    0 1.734723e-18
+3  5.204170e-18 0.000000e+00  0  0  0.00243575208734039 2.435752e-03
+4  3.336463e-13 7.912768e-14  0  0 0.000681208214416838 6.812082e-04
+5  9.332812e-16 0.000000e+00  0  0 0.000616004273351786 6.160043e-04
+6  0.000000e+00 0.000000e+00  0  0 9.57567358739198e-16 9.575674e-16
+7  0.000000e+00 0.000000e+00  0  0  0.00371231584063773 3.712316e-03
+8  1.252880e-02 0.000000e+00  0  0              NOT RUN 1.252880e-02
+9  2.749374e-11 2.206568e-15  0  0 3.10449978224714e-10 3.379459e-10
+10 3.318519e-12 0.000000e+00  0  0                    0 3.318519e-12
+11 0.000000e+00 0.000000e+00  0  0 3.03665037559853e-10 3.036650e-10
+> IMPR_max_copy
+      NM BFGS CG LB    SANN TOTAL
+1  0.013    0  0  0 NOT RUN 0.013
+2  0.000    0  0  0       0 0.000
+3  0.000    0  0  0   0.002 0.002
+4  0.000    0  0  0   0.001 0.001
+5  0.000    0  0  0   0.001 0.001
+6  0.000    0  0  0       0 0.000
+7  0.000    0  0  0   0.004 0.004
+8  0.013    0  0  0 NOT RUN 0.013
+9  0.000    0  0  0       0 0.000
+10 0.000    0  0  0       0 0.000
+11 0.000    0  0  0       0 0.000
+> TIME_max
+     NM BFGS   CG   LB             SANN
+1  0.83 0.11 0.04 0.71          NOT RUN
+2  1.12 0.10 0.03 0.34 85.7200000000012
+3  1.20 0.11 0.05 0.17             83.5
+4  0.61 0.08 0.28 0.86 79.7199999999975
+5  3.12 0.60 0.62 1.35 75.9799999999996
+6  0.05 0.04 0.05 0.05               75
+7  0.04 0.07 0.04 0.61 77.3899999999994
+8  0.30 0.13 0.04 0.85          NOT RUN
+9  0.25 0.11 0.06 0.19 82.0299999999988
+10 0.75 0.09 0.05 0.90 94.0799999999981
+11 1.75 0.08 0.04 0.96 99.1800000000003
+> fit_temp$par
+[1] 72.762617  2.268814
+> par2val(fit_temp$par)
+[1] 72.76262 82.43054
+> old_val
+[1] 0.03290776
+> my_interest[i]
+[1] 80
+> solveLP_max_min(new_par = fit_temp$par, new_t = my_interest[i])
+[1] -0.03290776
+ 
+
